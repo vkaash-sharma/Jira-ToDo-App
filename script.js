@@ -8,6 +8,7 @@ let textAreaCont = document.querySelector(".textarea-cont");
 const mainCont = document.querySelector(".main-cont");
 let ticketsArr = [];
 let toolBoxColors = document.querySelectorAll(".color");
+let removeBtn = document.querySelector(".remove-btn");
 
 
 let isModalPresent = false;
@@ -31,7 +32,7 @@ allPriorityColors.forEach(function (colorElement) {
        modalPriorityColor = colorElement.classList[0];
     });
 });
-
+//to generate and display a ticket 
 modalCont.addEventListener("keydown" , function(e) {
     let key = e.key;
     if(key == "Shift"){
@@ -60,6 +61,9 @@ function createTicket(ticketColor , data , ticketId){
 
     `;
     mainCont.appendChild(ticketCont);
+
+    handleRemoval(ticketCont , id);
+    handleColor(ticketCont , id);
    
     if(!ticketId){
         ticketsArr.push(
@@ -120,7 +124,59 @@ for(let i = 0 ; i <toolBoxColors.length ; i++){
 
     });
 
+}
+
+//on clicking removeBtn, make color red and amke color white in clicking again
+let removeBtnActive = false;
+removeBtn.addEventListener("click" , function () {
+    if(removeBtnActive){
+        removeBtn.style.color = "white";
+    }else{
+        removeBtn.style.color = "red";
+    }
+    removeBtnActive = !removeBtnActive;
+});
+// removes ticket from local storage and UI
+function handleRemoval(ticket , id){
+    ticket.addEventListener("click" , function () {
+        if(!removeBtnActive)return ;
+
+        let idx = getTicketIdx(id);
+        ticketsArr.splice(idx , 1);
+        //removed from browser storage and set updated arr 
+
+        localStorage.setItem("tickets" , JSON.stringify(ticketsArr));
+
+        ticket.remove();
 
 
+    });
+}
+//returns index of the ticket inside Local Storage's array
+function getTicketIdx(id){
+    let ticketIdx=ticketsArr.findIndex(function (ticketObj) {
+        return ticketObj.ticketId == id;
+    })
+    return ticketIdx;
+}
 
+//change priority color of the tickets
+function handleColor(ticket , id){
+    let ticketColorStrip = ticket.querySelector(".ticket-color");
+
+    ticketColorStrip.addEventListener("click" , function() {
+        let currTicketColor = ticketColorStrip.classList[1];
+        let currTicketColorIdx = colors.indexOf(currTicketColor);
+
+        let newTicketColorIdx = currTicketColorIdx +1;
+        newTicketColorIdx = newTicketColorIdx % colors.length;
+        let newTicketColor = colors[newTicketColorIdx];
+
+        ticketColorStrip.classList.remove(currTicketColor);
+        ticketColorStrip.classList.add(newTicketColor);
+
+        let ticketIdx = getTicketIdx(idx);
+        ticketsArr[ticketIdx].ticketColor = newTicketColor;
+        localStorage.setItem("tickets" , JSON.stringify(ticketsArr));
+    });
 }
