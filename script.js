@@ -1,15 +1,17 @@
+var uid = new ShortUniqueId();
 const addbtn = document.querySelector(".add-btn");
 const modalCont = document.querySelector(".modal-cont");
 const allPriorityColors =  document.querySelectorAll(".priority-color");
 let colors = ['lightpink','lightgreen','lightblue','black'];
 let modalPriorityColor = colors[colors.length - 1];
 let textAreaCont = document.querySelector(".textarea-cont");
-
 const mainCont = document.querySelector(".main-cont");
+let ticketsArr = [];
+let toolBoxColors = document.querySelectorAll(".color");
 
 
 let isModalPresent = false;
-addbtn.addEventListener('click', function() {
+addbtn.addEventListener("click", function() {
     if(!isModalPresent){
         modalCont.style.display = "flex";
     }else{
@@ -45,16 +47,80 @@ modalCont.addEventListener("keydown" , function(e) {
     }
 });
 
-
-function createTicket(ticketColor , data){
+//function to create new ticket
+function createTicket(ticketColor , data , ticketId){
+    let id = ticketId || uid();
     let ticketCont = document.createElement("div");
     ticketCont.setAttribute("class" ,"ticket-cont");
     ticketCont.innerHTML = `
     
     <div class="ticket-color ${ticketColor} "></div>
-    <div class="ticket-id"></div>
+    <div class="ticket-id">${id}</div>
     <div class="task-area">${data}</div>
 
     `;
     mainCont.appendChild(ticketCont);
+   
+    if(!ticketId){
+        ticketsArr.push(
+            {
+            ticketColor,
+            data,
+            ticketId: id
+        }
+    );
+    localStorage.setItem("tickets",JSON.stringify(ticketsArr));
+    }
+
+
+};
+
+// get all tickets from local Storage
+if(localStorage.getItem("tickets")){
+    ticketsArr = JSON.parse(localStorage.getItem("tickets"));
+    ticketsArr.forEach(function(ticketObj){
+        createTicket(ticketObj.ticketColor,ticketObj.data,ticketObj.ticketId);
+    })
+}
+
+
+
+for(let i = 0 ; i <toolBoxColors.length ; i++){
+    toolBoxColors[i].addEventListener("click",function(){
+        let currToolBoxColor = toolBoxColors[i].classList[0];
+
+        let filteredTickets =ticketsArr.filter(function(ticketObj){
+            return currToolBoxColor == ticketObj.ticketColor;
+        });
+
+        let allTickets = document.querySelectorAll(".ticket-cont");
+        for(let i = 0 ; i< allTickets.length ; i++){
+            allTickets[i].remove();
+        }
+
+        filteredTickets.forEach(function(ticketObj){
+            createTicket(
+                ticketObj.ticketColor,
+                ticketObj.data,
+                ticketObj.ticketId
+            );
+        })
+
+    })
+
+ 
+    toolBoxColors[i].addEventListener("dblclick",function() {
+        let allTickets = document.querySelectorAll(".ticket-cont");
+        for(let i = 0 ; i< allTickets.length ; i++){
+            allTickets[i].remove();
+        }
+        ticketsArr.forEach(function(ticketObj){
+            createTicket(ticketObj.ticketColor,ticketObj.data,ticketObj.ticketId);
+        });
+
+    });
+
+
+
+
 }
