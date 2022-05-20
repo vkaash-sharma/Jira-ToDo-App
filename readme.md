@@ -1,6 +1,6 @@
 # **TO-DO WEB APP**
 
-* A todo web application written with the goal of learning and Track your Daily Activities. Tech Stack Used:-***HTML,CSS,JAVASCRIPT***
+ A todo web application written with the goal of learning and Track your Daily Activities. Tech Stack Used:-***HTML,CSS,JAVASCRIPT***
 
 ## FEATURES
 
@@ -9,3 +9,7 @@
 * Edit Your todos
 * Every todo have there own ID's
 * You can change the stickers of the todos
+
+### SCREENSHOT
+
+![1653082774480.png](image/readme/1653082774480.png)
